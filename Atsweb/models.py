@@ -1,23 +1,38 @@
+# Atsweb/models.py
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.conf import settings
 
-# Choix pour le rôle utilisateur
 USER_ROLES = (
+    ('guest', 'Guest'),
     ('admin', 'Admin'),
-    ('user', 'Utilisateur'),
-    ('guest', 'Visiteur')
+    ('user', 'User'),
 )
+PREDEFINED_ADMINS = [
+    'admin1',
+    'superadmin',
+]
 
-class User(models.Model):
-    name = models.CharField(max_length=100)
+
+class User(AbstractUser):
+    first_name = None  # remove first_name
+    last_name = None   # remove last_name
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=100)
-    role = models.CharField(choices=USER_ROLES, max_length=20, default='guest', editable=False)
-    cv = models.FileField(upload_to='cv/')
-    ip_address = models.GenericIPAddressField()
-    is_active = models.BooleanField(default=True)
+    
+    role = models.CharField(choices=USER_ROLES, max_length=20, default='guest')
+    cv = models.FileField(upload_to='cv/', blank=True, null=True)
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    is_verified = models.BooleanField(default=False)
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']  # email required for createsuperuser
+    
+    @property
+    def is_predefined_admin(self):
+        return self.username in PREDEFINED_ADMINS
 
     def __str__(self):
-        return self.name
+        return self.username
 
 
 class Service(models.Model):
@@ -26,7 +41,7 @@ class Service(models.Model):
     description = models.TextField()
     heure_cree = models.DateTimeField(auto_now_add=True)
     heure_modifiee = models.DateTimeField(auto_now=True)
-    auteur = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    auteur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.titre
@@ -47,7 +62,7 @@ class Realisation(models.Model):
     technologies = models.ManyToManyField(Technology)
     heure_cree = models.DateTimeField(auto_now_add=True)
     heure_modifiee = models.DateTimeField(auto_now=True)
-    auteur = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    auteur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.titre
@@ -70,7 +85,7 @@ class Temoignage(models.Model):
     img = models.ImageField(upload_to='temoignages/', blank=True)
     heure_cree = models.DateTimeField(auto_now_add=True)
     heure_modifiee = models.DateTimeField(auto_now=True)
-    auteur = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    auteur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.nom
