@@ -14,12 +14,12 @@ admin.site.register(Temoignage)
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     ordering = ['email']
-    list_display = ['email', 'first_name', 'last_name', 'role', 'is_active', 'is_verified']
+    list_display = ['email', 'role', 'is_active', 'is_verified']
 
     # Organisation des champs dans la page de détail d'un utilisateur
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'cv')}),
+        (_('Personal info'), {'fields': ('cv', 'username')}),
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'role', 'is_verified', 'groups', 'user_permissions')
         }),
@@ -31,8 +31,8 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2', 'first_name', 'last_name', 'role'),
+            'fields': ('email', 'username', 'password1', 'password2', 'role'),
         }),
     )
 
-    search_fields = ('email', 'first_name', 'last_name')
+    search_fields = ('email',)

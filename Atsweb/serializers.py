@@ -100,7 +100,7 @@ class ServiceListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Service
-        fields = ["id", "titre", "description", "auteur_username", "heure_cree"]
+        fields = ["id", "titre", "description", "img", "auteur_username", "heure_cree"]
 
 
 class TechnologySerializer(serializers.ModelSerializer):
@@ -153,20 +153,27 @@ class RealisationListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Realisation
-        fields = ["id", "titre", "client", "technologies_names", "auteur_username", "heure_cree"]
+        fields = ["id", "titre", "client", "technologies_names", "description", "img", "auteur_username", "heure_cree"]
 
 
 class ArticleSerializer(serializers.ModelSerializer):
+    auteur_username = serializers.CharField(source='auteur.username', read_only=True)
     class Meta:
         model = Article
         fields = "__all__"
+    
+    def create(self, validated_data):
+        if 'auteur' not in validated_data and self.context.get('request'):
+            validated_data['auteur'] = self.context['request'].user
+        return super().create(validated_data)
 
 
 class ArticleListSerializer(serializers.ModelSerializer):
     """Simplified serializer for listing articles in dashboard"""
+    auteur_username = serializers.CharField(source='auteur.username', read_only=True)
     class Meta:
         model = Article
-        fields = ["id", "titre", "auteur", "heure_cree"]
+        fields = ["id", "titre", "auteur_username", "heure_cree", "description"]
 
 
 class TemoignageSerializer(serializers.ModelSerializer):
@@ -188,7 +195,7 @@ class TemoignageListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Temoignage
-        fields = ["id", "nom", "auteur_username", "heure_cree"]
+        fields = ["id", "nom","description", "auteur_username", "heure_cree"]
 
 
 # --- Dashboard Stats Serializer ---

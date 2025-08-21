@@ -73,7 +73,7 @@ class Article(models.Model):
     description = models.TextField()
     heure_cree = models.DateTimeField(auto_now_add=True)
     heure_modifiee = models.DateTimeField(auto_now=True)
-    auteur = models.CharField(max_length=100)
+    auteur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.titre
