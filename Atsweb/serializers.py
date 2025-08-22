@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.hashers import check_password
 
-from .models import Service, Technology, Realisation, Article, Temoignage
+from .models import Service, Technology, Realisation, Article, Temoignage, Candidature
 
 User = get_user_model()
 
@@ -19,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            "id", "username", "email", "password", "role", "cv", 
+            "id", "username", "email", "password", "role", 
             "ip_address", "is_active", "is_verified", "date_joined"
         ]
         read_only_fields = ["role", "ip_address", "is_verified", "date_joined"]
@@ -78,6 +78,23 @@ class MyTokenObtainPairSerializer(serializers.Serializer):
             "role": user.role,
         }
 
+# candidatures/serializers.py
+class CandidatureSerializer(serializers.ModelSerializer):
+    user_username = serializers.CharField(source='user.username', read_only=True)
+
+    class Meta:
+        model = Candidature
+        fields = ['id', 'user', 'user_username', 'cv', 'application_type', 'start_month', 'created_at']
+        extra_kwargs = {
+            'user': {'write_only': True},  # Only used for writing, not returned in response
+            'created_at': {'read_only': True},
+        }
+
+    def create(self, validated_data):
+        # Automatically set the user to the authenticated user
+        if 'user' not in validated_data and self.context.get('request'):
+            validated_data['user'] = self.context['request'].user
+        return Candidature.objects.create(**validated_data)
 
 # --- Content Serializers ---
 class ServiceSerializer(serializers.ModelSerializer):

@@ -17,7 +17,8 @@ from Atsweb.views import (
     MyTokenObtainPairView,
     DashboardStatsView,  # Add this view for dashboard stats
     RegisterView,        # Add this for user registration
-    CurrentUserView,     # Add this for current user details
+    CurrentUserView,
+    CandidatureViewSet          # Add this for current user details
 )
 
 # Create DRF router
@@ -28,6 +29,7 @@ router.register(r'technologies', TechnologyViewSet)
 router.register(r'realisations', RealisationViewSet)
 router.register(r'articles', ArticleViewSet)
 router.register(r'temoignages', TemoignageViewSet)
+router.register(r'candidatures', CandidatureViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

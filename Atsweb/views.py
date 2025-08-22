@@ -106,6 +106,18 @@ class UserViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+# candidatures/views.py
+from .models import Candidature
+from .serializers import CandidatureSerializer
+
+class CandidatureViewSet(viewsets.ModelViewSet):
+    queryset = Candidature.objects.all()
+    serializer_class = CandidatureSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Only return candidatures for the authenticated user
+        return self.queryset.filter(user=self.request.user)
 
 # --- JWT Login with Email ---
 class MyTokenObtainPairView(APIView):

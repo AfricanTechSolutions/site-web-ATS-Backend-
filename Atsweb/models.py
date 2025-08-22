@@ -1,5 +1,6 @@
 # Atsweb/models.py
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.conf import settings
 
@@ -20,7 +21,6 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     
     role = models.CharField(choices=USER_ROLES, max_length=20, default='guest')
-    cv = models.FileField(upload_to='cv/', blank=True, null=True)
     ip_address = models.GenericIPAddressField(blank=True, null=True)
     is_verified = models.BooleanField(default=False)
 
@@ -34,6 +34,21 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+    # candidatures/models.py
+class Candidature(models.Model):
+    APPLICATION_TYPES = [
+        ('stage', 'Stage'),
+        ('emploi', 'Emploi'),
+    ]
+
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='candidatures')
+    cv = models.FileField(upload_to='candidatures/cv/', blank=True, null=True)
+    application_type = models.CharField(max_length=20, choices=APPLICATION_TYPES, default='stage')
+    start_month = models.CharField(max_length=50, blank=True)  # e.g., "Janvier 2026"
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.application_type} - {self.start_month}"
 
 class Service(models.Model):
     titre = models.CharField(max_length=100)

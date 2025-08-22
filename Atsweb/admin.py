@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
-from .models import User, Service, Technology, Realisation, Article, Temoignage
+from .models import User, Service, Technology, Realisation, Article, Temoignage, Candidature
 
 # Enregistrement des autres modèles
 admin.site.register(Service)
@@ -9,7 +9,7 @@ admin.site.register(Technology)
 admin.site.register(Realisation)
 admin.site.register(Article)
 admin.site.register(Temoignage)
-
+admin.site.register(Candidature)
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
